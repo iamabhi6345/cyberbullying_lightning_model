@@ -23,7 +23,7 @@ class MLFlowConfig:
 @dataclass
 class InfrastructureConfig:
     project_id: str = "iamabhi45"
-    zone: str = "europe-west4-b"
+    zone: str = "europe-west4-a"
     # instance_group_creator: InstanceGroupCreatorConfig = InstanceGroupCreatorConfig()
     mlflow: MLFlowConfig = MLFlowConfig()
     # etcd_ip: Optional[str] = "10.164.0.12:2379"
