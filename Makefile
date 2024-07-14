@@ -22,15 +22,10 @@ PROD_SERVICE_NAME = app-prod
 PROD_CONTAINER_NAME = cybulde-model-prod-container
 PROD_PROFILE_NAME = prod
 
-ifeq (, $(shell which nvidia-smi))
-	PROFILE = ci
-	CONTAINER_NAME = cybulde-model-ci-container
-	SERVICE_NAME = app-ci
-else
-	PROFILE = dev
-	CONTAINER_NAME = cybulde-model-dev-container
-	SERVICE_NAME = app-dev
-endif
+
+PROFILE = dev
+CONTAINER_NAME = cybulde-model-dev-container
+SERVICE_NAME = app-dev
 
 DIRS_TO_VALIDATE = cybulde
 DOCKER_COMPOSE_RUN = $(DOCKER_COMPOSE_COMMAND) run --rm $(SERVICE_NAME)
@@ -46,7 +41,7 @@ guard-%:
 	@#$(or ${$*}, $(error $* is not set))
 
 ## Generate final config. For overrides use: OVERRIDES=<overrides>
-generate-final-config: up-prod
+generate-final-config: up
 	@$(DOCKER_COMPOSE_EXEC_PROD) python cybulde/generate_final_config.py docker_image=${GCP_DOCKER_REGISTRY_URL}:${IMAGE_TAG} ${OVERRIDES}
 
 ## Generate final config local. For overrides use: OVERRIDES=<overrides>
