@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 def get_config(
-    config_path: str, config_name: str
+    config_path: str, config_name: str, to_object: bool = True, return_dict_config: bool = False
 ) -> TaskFunction:
     setup_config()
     setup_logger()
@@ -29,28 +29,32 @@ def get_config(
     def main_decorator(task_function: TaskFunction) -> Any:
         @hydra.main(config_path=config_path, config_name=config_name, version_base=None)
         def decorated_main(dict_config: Optional[DictConfig] = None) -> Any:
-           config = OmegaConf.to_object(dict_config)
-           return task_function(config)
-           
+            if to_object:
+                config = OmegaConf.to_object(dict_config)
+
+            if not return_dict_config:
+                assert to_object
+                return task_function(config)
+            return task_function(dict_config)
 
         return decorated_main
 
     return main_decorator
 
 
-# def get_config_and_dict_config(config_path: str, config_name: str) -> Any:
-#     setup_config()
-#     setup_logger()
+def get_config_and_dict_config(config_path: str, config_name: str) -> Any:
+    setup_config()
+    setup_logger()
 
-#     def main_decorator(task_function: Any) -> Any:
-#         @hydra.main(config_path=config_path, config_name=config_name, version_base=None)
-#         def decorated_main(dict_config: Optional[DictConfig] = None) -> Any:
-#             config = OmegaConf.to_object(dict_config)
-#             return task_function(config, dict_config)
+    def main_decorator(task_function: Any) -> Any:
+        @hydra.main(config_path=config_path, config_name=config_name, version_base=None)
+        def decorated_main(dict_config: Optional[DictConfig] = None) -> Any:
+            config = OmegaConf.to_object(dict_config)
+            return task_function(config, dict_config)
 
-#         return decorated_main
+        return decorated_main
 
-#     return main_decorator
+    return main_decorator
 
 
 def setup_config() -> None:

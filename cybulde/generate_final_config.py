@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 
-@get_config(config_path="../configs",config_name="config")
+@get_config(config_path="../configs",config_name="config",to_object=False,return_dict_config=True)
 def generate_final_config(config):
     # print(OmegaConf.to_yaml(config))
     # return
@@ -33,6 +33,9 @@ def generate_final_config(config):
         config.infrastructure.mlflow.run_id = run_id
         config.infrastructure.mlflow.experiment_id = experiment_id
 
+        # print("\n\n\n")
+        # print(OmegaConf.to_yaml(config))
+        # print("\n\n")
 #           saving in local disk and in mlflow
         config_save_dir = Path("./cybulde/configs/automatically_generated/")
         config_save_dir.mkdir(parents=True, exist_ok=True)

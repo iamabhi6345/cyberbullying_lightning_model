@@ -1,11 +1,8 @@
 from dataclasses import dataclass
-
 from hydra.core.config_store import ConfigStore
 from omegaconf import MISSING, SI
-
 from cybulde.config_schemas.models import transformation_schemas
-# from cybulde.utils.mixins import LoggableParamsMixin
-
+from cybulde.utils.mixins import LoggableParamsMixin
 
 @dataclass
 class DataModuleConfig(LoggableParamsMixin):
@@ -17,8 +14,8 @@ class DataModuleConfig(LoggableParamsMixin):
     drop_last: bool = True
     persistent_workers: bool = False
 
-    # def loggable_params(self) -> list[str]:
-    #     return ["_target_", "batch_size"]
+    def loggable_params(self) -> list[str]:
+        return ["_target_", "batch_size"]
 
 
 @dataclass
@@ -52,4 +49,3 @@ def setup_config() -> None:
         group="tasks/data_module",
         node=TextClassificationDataModuleConfig,
     )
-

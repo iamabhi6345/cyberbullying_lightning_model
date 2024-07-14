@@ -54,7 +54,7 @@ run-tasks: generate-final-config push
 
 ## Local run tasks
 local-run-tasks: local-generate-final-config
-	$(DOCKER_COMPOSE_EXEC) python cybulde/run_tasks.py
+	$(DOCKER_COMPOSE_EXEC) torchrun cybulde/run_tasks.py
 
 ## Starts jupyter lab
 notebook: up
