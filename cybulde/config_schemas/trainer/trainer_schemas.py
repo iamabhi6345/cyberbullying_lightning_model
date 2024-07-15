@@ -14,7 +14,8 @@ class TrainerConfig(LoggableParamsMixin):
     strategy: str = "ddp_find_unused_parameters_true"
     devices: str = "auto"
     num_nodes: int = 1  # SI("${}")
-    precision: str = "16-mixed"
+    # precision: str = "16-mixed"
+    precision: Optional[str] = None
     logger: Optional[list[logger_schemas.LoggerConfig]] = field(default_factory=lambda: [])  # type: ignore
     callbacks: Optional[list[callbacks_schemas.CallbackConfig]] = field(default_factory=lambda: [])  # type: ignore
     fast_dev_run: bool = False
