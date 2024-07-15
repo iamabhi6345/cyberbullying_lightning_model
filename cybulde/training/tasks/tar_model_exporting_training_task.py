@@ -17,6 +17,8 @@ if TYPE_CHECKING:
     from cybulde.config_schemas.training.training_task_schemas import TrainingTaskConfig
 
 
+# 'cybulde.training.tasks.tar_model_exporting_training_task.TarModelExportingTrainingTask'
+
 class TarModelExportingTrainingTask(TrainingTask):
     def __init__(
         self,

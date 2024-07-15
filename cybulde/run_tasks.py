@@ -1,18 +1,3 @@
-# from cybulde.config_schemas.config_schema import Config
-# from cybulde.utils.config_utils import get_config
-
-
-# @get_config(config_path="../configs", config_name="config")
-# def entrypoint(config: Config) -> None:
-#     print(config)
-
-
-# if __name__ == "__main__":
-#     entrypoint()  # type: ignore
-    
-    
-
-
 from lightning.pytorch import seed_everything
 import torch
 from omegaconf import OmegaConf
@@ -32,7 +17,7 @@ def run_tasks(config: Config) -> None:
     
     
     logger = get_logger(__file__)  
-    assert config.infrastructure.MLflow.run_id is not None, "Run id has to be set for running tasks"
+    assert config.infrastructure.mlflow.run_id is not None, "Run id has to be set for running tasks"
     
     backend = "gloo"  
     if torch.cuda.is_available():
@@ -66,24 +51,31 @@ if __name__ == "__main__":
 
 
 
-
-# import torch
-
-# from hydra.utils import instantiate
 # from lightning.pytorch import seed_everything
-
+# import torch
+# from omegaconf import OmegaConf
+# from hydra.utils import instantiate
 # from cybulde.config_schemas.config_schema import Config
 # from cybulde.utils.config_utils import get_config
 # from cybulde.utils.torch_utils import get_local_rank
 # from cybulde.utils.utils import get_logger
 
-
-# @get_config(
-#     config_path="../configs/automatically_generated", config_name="config", to_object=False, return_dict_config=True
-# )
+# @get_config(config_path="../configs/automatically_generated", config_name="config", to_object=False, return_dict_config=True)
 # def run_tasks(config: Config) -> None:
+#     # Debug: Print the loaded configuration
+#     # print("Loaded configuration:")
+#     # print(OmegaConf.to_yaml(config, resolve=True))
+
 #     logger = get_logger(__file__)
 #     assert config.infrastructure.mlflow.run_id is not None, "Run id has to be set for running tasks"
+
+#     # Debug: Verify the task import
+#     try:
+#         from cybulde.training.tasks.tar_model_exporting_training_task import TarModelExportingTrainingTask
+#         print("TarModelExportingTrainingTask successfully imported")
+#     except ImportError as e:
+#         print(f"Failed to import TarModelExportingTrainingTask: {e}")
+#         raise
 
 #     backend = "gloo"
 #     if torch.cuda.is_available():
@@ -99,6 +91,7 @@ if __name__ == "__main__":
 #         task = instantiate(task_config)
 #         task.run(config=config, task_config=task_config)
 
-
 # if __name__ == "__main__":
+#     import os
+#     os.environ["HYDRA_FULL_ERROR"] = "1"
 #     run_tasks()

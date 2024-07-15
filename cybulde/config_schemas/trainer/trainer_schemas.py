@@ -55,7 +55,8 @@ class TrainerConfig(LoggableParamsMixin):
 @dataclass
 class GPUDev(TrainerConfig):
     max_epochs: int = 3
-    accelerator: str = "gpu"
+    # accelerator: str = "gpu"
+    accelerator: str = "cpu"
     log_every_n_steps: int = 1
     limit_train_batches: float = 0.01
     limit_val_batches: float = 0.01
@@ -75,7 +76,8 @@ class GPUDev(TrainerConfig):
 @dataclass
 class GPUProd(TrainerConfig):
     max_epochs: int = 20
-    accelerator: str = "gpu"
+    # accelerator: str = "gpu"
+    accelerator: str = "cpu"
     log_every_n_steps: int = 20
     logger: Optional[list[logger_schemas.LoggerConfig]] = field(
         default_factory=lambda: [logger_schemas.MLFlowLoggerConfig()]

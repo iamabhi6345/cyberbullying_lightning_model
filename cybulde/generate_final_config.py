@@ -5,17 +5,16 @@ import mlflow
 
 from omegaconf import DictConfig
 
-from cybulde.utils.config_utils import get_config, save_config_as_yaml
+from cybulde.utils.config_utils import get_config, save_config_as_yaml,get_config_and_dict_config
 
-from cybulde.utils.mlflow_utils import activate_mlflow
-
+from cybulde.utils.mlflow_utils import activate_mlflow, log_artifacts_for_reproducibility, log_training_hparams
 if TYPE_CHECKING:
     from cybulde.config_schemas.config_schema import Config
 
 
 
-@get_config(config_path="../configs",config_name="config",to_object=False,return_dict_config=True)
-def generate_final_config(config):
+@get_config_and_dict_config(config_path="../configs",config_name="config")
+def generate_final_config(config:"Config",dict_config:DictConfig):
     # print(OmegaConf.to_yaml(config))
     # return
 
@@ -29,9 +28,9 @@ def generate_final_config(config):
         experiment_id: str = run.info.experiment_id
         artifact_uri: str = run.info.artifact_uri
 
-        config.infrastructure.mlflow.artifact_uri = artifact_uri
-        config.infrastructure.mlflow.run_id = run_id
-        config.infrastructure.mlflow.experiment_id = experiment_id
+        dict_config.infrastructure.mlflow.artifact_uri = artifact_uri
+        dict_config.infrastructure.mlflow.run_id = run_id
+        dict_config.infrastructure.mlflow.experiment_id = experiment_id
 
         # print("\n\n\n")
         # print(OmegaConf.to_yaml(config))
@@ -42,9 +41,11 @@ def generate_final_config(config):
         (config_save_dir / "__init__.py").touch(exist_ok=True)
 
         yaml_config_save_path = config_save_dir / "config.yaml"
-        save_config_as_yaml(config, str(yaml_config_save_path))
+        save_config_as_yaml(dict_config, str(yaml_config_save_path))
         mlflow.log_artifact(str(yaml_config_save_path))
 
+        log_training_hparams(config)
+        log_artifacts_for_reproducibility()
 
 
 
