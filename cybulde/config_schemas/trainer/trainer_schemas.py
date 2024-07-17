@@ -14,8 +14,8 @@ class TrainerConfig(LoggableParamsMixin):
     strategy: str = "ddp_find_unused_parameters_true"
     devices: str = "auto"
     num_nodes: int = 1  # SI("${}")
-    # precision: str = "16-mixed"
-    precision: Optional[str] = None
+    precision: str = "16-mixed"
+    # precision: Optional[str] = "32"
     logger: Optional[list[logger_schemas.LoggerConfig]] = field(default_factory=lambda: [])  # type: ignore
     callbacks: Optional[list[callbacks_schemas.CallbackConfig]] = field(default_factory=lambda: [])  # type: ignore
     fast_dev_run: bool = False
@@ -77,8 +77,8 @@ class GPUDev(TrainerConfig):
 @dataclass
 class GPUProd(TrainerConfig):
     max_epochs: int = 20
-    # accelerator: str = "gpu"
-    accelerator: str = "cpu"
+    accelerator: str = "gpu"
+    # accelerator: str = "cpu"
     log_every_n_steps: int = 20
     logger: Optional[list[logger_schemas.LoggerConfig]] = field(
         default_factory=lambda: [logger_schemas.MLFlowLoggerConfig()]
