@@ -107,6 +107,9 @@ COPY ./docker/scripts/* /
 RUN dos2unix /*.sh && chown -R ${USER_NAME} /*.sh && chmod +x /*.sh
 USER ${USER_NAME}
 
+
+
+
 COPY . /app/
 CMD ["/startup-script.sh"]
 

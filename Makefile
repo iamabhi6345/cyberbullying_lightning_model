@@ -41,8 +41,9 @@ guard-%:
 	@#$(or ${$*}, $(error $* is not set))
 
 ## Generate final config. For overrides use: OVERRIDES=<overrides>
-generate-final-config: up
-	@$(DOCKER_COMPOSE_EXEC_PROD) python cybulde/generate_final_config.py docker_image=${GCP_DOCKER_REGISTRY_URL}:${IMAGE_TAG} ${OVERRIDES}
+generate-final-config: up-prod
+	# @$(DOCKER_COMPOSE_EXEC_PROD) python cybulde/generate_final_config.py docker_image=${GCP_DOCKER_REGISTRY_URL}:${IMAGE_TAG} ${OVERRIDES}
+	@$(DOCKER_COMPOSE_EXEC_PROD) python cybulde/generate_final_config.py infrastructure.instance_group_creator.instance_template_creator.vm_metadata_config.docker_image=${GCP_DOCKER_REGISTRY_URL}:${IMAGE_TAG} ${OVERRIDES}
 
 ## Generate final config local. For overrides use: OVERRIDES=<overrides>
 local-generate-final-config: up
@@ -135,6 +136,12 @@ push: guard-IMAGE_TAG build
 	@docker tag "$${DOCKER_IMAGE_NAME}:latest" "$${GCP_DOCKER_REGISTRY_URL}:$${IMAGE_TAG}"
 	@docker push "$${GCP_DOCKER_REGISTRY_URL}:$${IMAGE_TAG}"
 
+#% pushing to gcp artifact
+local-push:
+	@gcloud auth configure-docker --quiet europe-west4-docker.pkg.dev
+	@docker tag "$${DOCKER_IMAGE_NAME}:latest" "$${GCP_DOCKER_REGISTRY_URL}:$${IMAGE_TAG}"
+	@docker push "$${GCP_DOCKER_REGISTRY_URL}:$${IMAGE_TAG}"
+
 ## Run ssh tunnel for MLFlow
 mlflow-ssh-tunnel:
 	gcloud compute ssh "$${VM_NAME}" --zone "$${ZONE}" --tunnel-through-iap -- -N -L "$${PROD_MLFLOW_SERVER_PORT}:localhost:$${PROD_MLFLOW_SERVER_PORT}"
@@ -145,6 +152,7 @@ clean-mlflow-volumes: down
 
 ## Deploy etcd server on GCE
 deploy-etcd-server:
+	dos2unix ./scripts/deploy-etcd-server.sh
 	chmod +x ./scripts/deploy-etcd-server.sh
 	./scripts/deploy-etcd-server.sh
 

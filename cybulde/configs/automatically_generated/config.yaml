@@ -12,16 +12,57 @@ hydra:
 
 infrastructure:
   project_id: iamabhi45
-  zone: europe-west4-a
+  zone: europe-west4-b
+  instance_group_creator:
+    _target_: cybulde.infrastructure.instance_group_creator.InstanceGroupCreator
+    instance_template_creator:
+      _target_: cybulde.infrastructure.instance_template_creator.InstanceTemplateCreator
+      scopes:
+      - https://www.googleapis.com/auth/cloud-platform
+      - https://www.googleapis.com/auth/cloud.useraccounts.readonly
+      - https://www.googleapis.com/auth/cloudruntimeconfig
+      network: https://www.googleapis.com/compute/v1/projects/cybulde/global/networks/default
+      subnetwork: https://www.googleapis.com/compute/v1/projects/cybulde/regions/europe-west4/subnetworks/default
+      startup_script_path: scripts/vm_startup/task_runner_startup_script.sh
+      vm_config:
+        machine_type: n1-standard-8
+        accelerator_count: 1
+        accelerator_type: nvidia-tesla-t4
+        vm_type: STANDARD
+        disks: []
+      boot_disk_config:
+        project_id: deeplearning-platform-release
+        name: common-cu113-v20230925
+        size_gb: 50
+        labels:
+          project: cybulde
+      vm_metadata_config:
+        instance_group_name: cybulde-None-20240718194549
+        docker_image: europe-west4-docker.pkg.dev/iamabhi45/abhishek/cybulde-model:train-2e8b96ac-547d-4e79-9b45-0f828802c64b
+        zone: europe-west4-b
+        python_hash_seed: 42
+        mlflow_tracking_uri: http://iamabhi45-mlflow.europe-west4-a.c.iamabhi45.internal:6100
+        node_count: 1
+        disks: []
+        etcd_ip: 10.164.0.30:2379
+      template_name: cybulde-None-20240718194549
+      project_id: iamabhi45
+      labels:
+        project: cybulde
+    name: cybulde-None-20240718194549
+    node_count: 1
+    project_id: iamabhi45
+    zone: europe-west4-b
   mlflow:
-    mlflow_external_tracking_uri: http://127.0.0.1:6101
-    mlflow_internal_tracking_uri: http://127.0.0.1:6101
+    mlflow_external_tracking_uri: http://localhost:6100
+    mlflow_internal_tracking_uri: http://iamabhi45-mlflow.europe-west4-a.c.iamabhi45.internal:6100
     experiment_name: cybulde
     run_name: null
-    run_id: 389a8e8bd7574577a1b13d38755e72d0
-    experiment_id: '6'
-    experiment_url: http://127.0.0.1:6101/#/experiments/6/runs/389a8e8bd7574577a1b13d38755e72d0
-    artifact_uri: /mlflow-artifact-store/6/389a8e8bd7574577a1b13d38755e72d0/artifacts
+    run_id: 056749d7f10140618d4b94c5bcb88ca5
+    experiment_id: '1'
+    experiment_url: http://localhost:6100/#/experiments/1/runs/056749d7f10140618d4b94c5bcb88ca5
+    artifact_uri: gs://mlflow45/1/056749d7f10140618d4b94c5bcb88ca5/artifacts
+  etcd_ip: 10.164.0.30:2379
 save_last_checkpoint_every_n_train_steps: 500
 seed: 1234
 tasks:
@@ -119,15 +160,15 @@ tasks:
       - _target_: lightning.pytorch.loggers.mlflow.MLFlowLogger
         experiment_name: cybulde
         run_name: null
-        tracking_uri: http://127.0.0.1:6101
+        tracking_uri: http://iamabhi45-mlflow.europe-west4-a.c.iamabhi45.internal:6100
         tags: null
         save_dir: null
         prefix: ''
         artifact_location: null
-        run_id: 389a8e8bd7574577a1b13d38755e72d0
+        run_id: 056749d7f10140618d4b94c5bcb88ca5
       callbacks:
       - _target_: lightning.pytorch.callbacks.ModelCheckpoint
-        dirpath: /mlflow-artifact-store/6/389a8e8bd7574577a1b13d38755e72d0/artifacts/best-checkpoints/
+        dirpath: gs://mlflow45/1/056749d7f10140618d4b94c5bcb88ca5/artifacts/best-checkpoints/
         filename: null
         monitor: validation_f1_score
         verbose: false
@@ -141,7 +182,7 @@ tasks:
         every_n_epochs: null
         save_on_train_epoch_end: null
       - _target_: lightning.pytorch.callbacks.ModelCheckpoint
-        dirpath: /mlflow-artifact-store/6/389a8e8bd7574577a1b13d38755e72d0/artifacts/last-checkpoints/
+        dirpath: gs://mlflow45/1/056749d7f10140618d4b94c5bcb88ca5/artifacts/last-checkpoints/
         filename: checkpoint-{epoch}
         monitor: null
         verbose: false
@@ -186,9 +227,9 @@ tasks:
       sync_batchnorm: true
       reload_dataloaders_every_n_epochs: 0
       default_root_dir: ./data/pytorch-lightning
-    best_training_checkpoint: /mlflow-artifact-store/6/389a8e8bd7574577a1b13d38755e72d0/artifacts/best-checkpoints/last.ckpt
-    last_training_checkpoint: /mlflow-artifact-store/6/389a8e8bd7574577a1b13d38755e72d0/artifacts/last-checkpoints/last.ckpt
-    tar_model_export_path: /mlflow-artifact-store/6/389a8e8bd7574577a1b13d38755e72d0/artifacts/exported_model.tar.gz
+    best_training_checkpoint: gs://mlflow45/1/056749d7f10140618d4b94c5bcb88ca5/artifacts/best-checkpoints/last.ckpt
+    last_training_checkpoint: gs://mlflow45/1/056749d7f10140618d4b94c5bcb88ca5/artifacts/last-checkpoints/last.ckpt
+    tar_model_export_path: gs://mlflow45/1/056749d7f10140618d4b94c5bcb88ca5/artifacts/exported_model.tar.gz
   binary_text_evaluation_task:
     _target_: cybulde.evaluation.tasks.common_evaluation_task.CommonEvaluationTask
     name: binary_text_evaluation_task
@@ -223,15 +264,15 @@ tasks:
       - _target_: lightning.pytorch.loggers.mlflow.MLFlowLogger
         experiment_name: cybulde
         run_name: null
-        tracking_uri: http://127.0.0.1:6101
+        tracking_uri: http://iamabhi45-mlflow.europe-west4-a.c.iamabhi45.internal:6100
         tags: null
         save_dir: null
         prefix: ''
         artifact_location: null
-        run_id: 389a8e8bd7574577a1b13d38755e72d0
+        run_id: 056749d7f10140618d4b94c5bcb88ca5
       callbacks:
       - _target_: lightning.pytorch.callbacks.ModelCheckpoint
-        dirpath: /mlflow-artifact-store/6/389a8e8bd7574577a1b13d38755e72d0/artifacts/best-checkpoints/
+        dirpath: gs://mlflow45/1/056749d7f10140618d4b94c5bcb88ca5/artifacts/best-checkpoints/
         filename: null
         monitor: validation_f1_score
         verbose: false
@@ -245,7 +286,7 @@ tasks:
         every_n_epochs: null
         save_on_train_epoch_end: null
       - _target_: lightning.pytorch.callbacks.ModelCheckpoint
-        dirpath: /mlflow-artifact-store/6/389a8e8bd7574577a1b13d38755e72d0/artifacts/last-checkpoints/
+        dirpath: gs://mlflow45/1/056749d7f10140618d4b94c5bcb88ca5/artifacts/last-checkpoints/
         filename: checkpoint-{epoch}
         monitor: null
         verbose: false
@@ -290,10 +331,10 @@ tasks:
       sync_batchnorm: true
       reload_dataloaders_every_n_epochs: 0
       default_root_dir: ./data/pytorch-lightning
-    tar_model_path: /mlflow-artifact-store/6/389a8e8bd7574577a1b13d38755e72d0/artifacts/exported_model.tar.gz
+    tar_model_path: gs://mlflow45/1/056749d7f10140618d4b94c5bcb88ca5/artifacts/exported_model.tar.gz
 model_selector:
   _target_: cybulde.evaluation.model_selector.ModelSelector
-  mlflow_run_id: 389a8e8bd7574577a1b13d38755e72d0
+  mlflow_run_id: 056749d7f10140618d4b94c5bcb88ca5
   must_be_better_metric_comparers:
     f1_score:
       _target_: cybulde.evaluation.model_selector.MetricComparer
